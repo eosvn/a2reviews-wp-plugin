@@ -119,9 +119,18 @@ class A2reviews_Public {
      * @return void echo
      */
 	public function head_script(){
-		echo "<script>
+		$current_user = wp_get_current_user();
+		$user_id 	= isset($current_user->data->ID)? $current_user->data->ID: 0;
+		$name		= isset($current_user->data->display_name)? $current_user->data->display_name: '';
+		$email		= isset($current_user->data->user_email)? $current_user->data->user_email: '';
+		
+		echo "<script type=\"text/javascript\">
 			var A2_Reviews_Woo = {
-				domain: '". $this->domain ."'
+				domain	: '{$this->domain}',
+				user_id	: $user_id,
+				name	: '$name',
+				email	: '$email',
+				ajaxUrl : '". admin_url( 'admin-ajax.php' ) ."'
 			}
 		</script>";
 	}
@@ -447,7 +456,7 @@ A2;
 		 */
 
 		wp_enqueue_script( $this->plugin_name.'-cdn', $this->app_script.'?shop='.$this->domain , array(), $this->version, true );
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/a2reviews-public.js', array( 'jquery' ), $this->version, true );
+		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/a2reviews-public.js', array( 'jquery', $this->plugin_name.'-cdn' ), $this->version, true );
 		wp_localize_script( $this->plugin_name, 'a2reviews_settings', array( 'options' => $this->options ) );
 	}
 
