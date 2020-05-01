@@ -1,0 +1,285 @@
+<?php
+
+/**
+ * A2 Reviews api class
+ *
+ * @link       https://www.gobliz.com/plugin/a2reviews
+ * @since      1.0.0
+ *
+ * @package    A2reviews
+ * @subpackage A2reviews/includes
+ */
+
+/**
+ * A2 Reviews api class
+ *
+ * API for interaction between client site and a2 reviews app
+ *
+ * @since      1.0.0
+ * @package    A2reviews
+ * @subpackage A2reviews/includes
+ * @author     A2reviews <os.solutionvn@gmail.com>
+ */
+class A2reviews_API {
+	
+	/**
+	 * The endpoint of this api.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      string    $endpoint
+	 */
+	private $endpoint;
+	
+	/**
+	 * The data of this $_POST.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 * @var      (array | object)    $post_data.
+	 */
+	private $post_data;
+	/**
+	 * Define the core functionality of the plugin.
+	 *
+	 * Set the plugin name and the plugin version that can be used throughout the plugin.
+	 * Load the dependencies, define the locale, and set the hooks for the admin area and
+	 * the public-facing side of the site.
+	 *
+	 * @since    1.0.0
+	 */
+	public function __construct($endpoint, $post_data) {
+		$this->endpoint = $endpoint;
+		$this->post_data = $post_data;
+	}
+	
+	/**
+	 * Check is woocommerce plugin is active
+	 *
+	 * @since    1.0.0
+	 */
+    public function isWooCommerce(){
+	    if(in_array( 
+		    'woocommerce/woocommerce.php', 
+		    apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) 
+		)){
+			return true;
+		}else{
+			return false;
+		}
+    }
+	
+	
+	/**
+	 * Verify data send from a2reviews app
+	 *
+	 * Long Description.
+	 *
+	 * @since    1.0.0
+	 */
+	private function verify_data(){
+		if(!isset($_SERVER['HTTP_X_A2REVIEWS_HMAC']))
+			return false;
+			
+		$parse = parse_url(get_option( 'siteurl' ));
+		$domain = $parse['host'];
+		
+		$hmac_verify = $_SERVER['HTTP_X_A2REVIEWS_HMAC'];
+		
+		$secret_code = ($this->endpoint == 'request-access')? md5($domain): md5(get_option( 'a2reviews_access_token' ));
+		$hmac = hash_hmac('sha256', base64_encode(http_build_query($this->post_data)), $secret_code);
+		
+		return $hmac_verify === $hmac? true: false;
+	}
+	
+	/**
+	 * Build method
+	 *
+	 * Long Description.
+	 *
+	 * @since    1.0.0
+	 */
+	private function method_name(){
+		return str_replace('-', '_', $this->endpoint);
+	}
+
+	/**
+	 * Hand action API
+	 *
+	 * Long Description.
+	 *
+	 * @since    1.0.0
+	 */
+	public function handle() {
+		
+		//Check valid data
+		if(!$this->verify_data()){
+			return ['errors' => 'Invalid data'];
+		}
+		
+		//Handle endpoint request		
+		$method = $this->method_name();
+		if(method_exists($this, $method)){
+			return $this->{$method}();
+		}
+		
+		//Not found endpoint
+		return [
+			'errors' => 'Not found',
+			'endpoint' => $this->endpoint
+		];
+	}
+	
+	
+	/**
+	 * Request access from a2reviews app
+	 *
+	 * Long Description.
+	 *
+	 * @since    1.0.0
+	 */
+	private function request_access(){
+		$verified = false;
+		$code = isset($this->post_data['code'])? $this->post_data['code']: '';
+		$access_token = '';
+		$data_info = new \stdClass;
+		
+		if( $code == get_option( 'a2reviews_auth_code' )){
+			$verified = true;
+			$access_token = md5(wp_generate_password( 26, false ));
+			$access_token = sanitize_text_field($access_token);
+			
+			update_option( 'a2reviews_access_token', $access_token );
+			update_option( 'a2reviews_auth_code', '' );
+			
+			$data_info->admin_email 	= get_option( 'admin_email' );
+			$data_info->blogname 		= get_option( 'blogname' );
+			$data_info->siteurl 		= get_option( 'siteurl' );
+			$data_info->user 			= get_user_by( 'email', $data_info->admin_email );
+		}
+		
+		return [
+			'status' => 'success',
+			'verified' => $verified,
+			'access_token' => $access_token,
+			'info' => $data_info
+		];
+	}
+	
+	/**
+	 * Update product meta api
+	 *
+	 * Long Description.
+	 *
+	 * @since    1.0.0
+	 */
+	private function update_product_meta(){
+		global $post;
+		$product_data = [];
+		
+		$product_id = isset($this->post_data['product_id'])? intval($this->post_data['product_id']): 0;
+		
+		$count = new stdClass();
+		$count->count_r5 	=  0;
+		$count->count_r4 	=  0;
+		$count->count_r3 	=  0;
+		$count->count_r2 	=  0;
+		$count->count_r1 	=  0;
+		$count->total 		=  0;
+		$count->avg_rating 	=  0;
+		$count->count_deactivate =  0;
+		$count->count_feature =  0;
+		$count->count_empty =  0;
+		$count->count_photos =  0;
+		
+		$total_rating 	= isset($this->post_data['total_rating'])? intval($this->post_data['total_rating']): 0;
+		$total_questions = isset($this->post_data['total_questions'])? intval($this->post_data['total_questions']): 0;
+		$avg_rating 	= isset($this->post_data['avg_rating'])? floatval($this->post_data['avg_rating']): 0;
+		$count_data 	= isset($this->post_data['count'])? (OBJECT) $this->post_data['count']: $count;
+		
+		if($product_id){
+			update_post_meta( $product_id, 'a2_meta_total_rating', $total_rating );
+			update_post_meta( $product_id, 'a2_meta_total_questions', $total_questions );
+			update_post_meta( $product_id, 'a2_meta_avg_rating', $avg_rating );
+			update_post_meta( $product_id, 'a2_meta_count', $count_data );
+		}
+		
+		if($product_id && function_exists('wc_get_product')){
+			$product = wc_get_product( $product_id );
+			
+			$product_data = [
+				'id' 			=> $product->get_id(),
+				'name' 			=> $product->get_name(),
+				'slug' 			=> $product->get_slug(),
+				'image'			=> wp_get_attachment_image_url( $product->get_image_id(), 'full' ),
+				'date_created' 	=> $product->get_date_created(),
+			];
+		}
+		
+		return [
+			'product_id' => $product_id,
+			'product' => $product_data,
+			'meta' => get_post_meta($product_id)
+		];
+	}
+	
+	
+	/**
+	 * Get webhook info
+	 *
+	 * Long Description.
+	 *
+	 * @since    1.0.0
+	 */
+	private function get_webhook_info(){
+		
+		if(!$this->isWooCommerce()){
+			return ['webhooks' => []];
+		}
+		
+		$data_store = WC_Data_Store::load( 'webhook' );
+		$webhooks   = $data_store->search_webhooks();
+		
+		$webhook_data = [];
+		foreach($webhooks as $id){
+			$webhook = new WC_Webhook($id);
+			
+			if(strpos($webhook->get_delivery_url(), 'webhook.a2rev.com') !== false){
+				$webhook_data[] = [
+					'name' 			=> $webhook->get_name(),
+					'delivery_url' 	=> $webhook->get_delivery_url(),
+					'topic' 		=> $webhook->get_topic(),
+					'secret' 		=> $webhook->get_secret(),
+					'status' 		=> $webhook->get_status()
+				];
+			}
+		}
+		
+		$topic = isset($this->post_data['topic'])? $this->post_data['topic']: '';
+		
+		return [
+			'webhooks' => $webhook_data
+		];
+	}
+	
+	/**
+	 * Update product meta api
+	 *
+	 * Long Description.
+	 *
+	 * @since    1.0.0
+	 */
+	private function update_client_settings(){
+		$settings = isset($this->post_data['settings'])? intval($this->post_data['settings']): [];
+		$update = 0;
+		
+		if(!$settings && (is_object($settings) || is_array($settings))){
+			$update = update_option( 'a2reviews_client_settings', $settings );
+		}
+		
+		return [
+			'update' => $update
+		];
+	}
+
+}
