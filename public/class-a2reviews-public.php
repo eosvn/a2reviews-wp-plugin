@@ -103,14 +103,27 @@ class A2reviews_Public {
 		} );
 		
 		// Remove storefront sidebar
-		add_action( 'get_header', function(){
-			if ( is_woocommerce() || is_checkout() ) {
+		add_action( 'get_header', function(){			
+			if ( $this->is_woocommerce_active() ) {
 				remove_action( 'storefront_sidebar', 'storefront_get_sidebar', 10 );
 			}
 		} );
 		
 		$this->add_snippets_code();
 	}
+	
+	/**
+	 * is woocommerce active
+	 *
+	 * @since    1.0.0
+	 */
+    public function is_woocommerce_active(){
+	    if(in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))){ 
+			return true;
+		}
+		
+		return false;
+    }
 	
 	/**
      * A2 reviews variable init
@@ -123,6 +136,8 @@ class A2reviews_Public {
 		$user_id 	= isset($current_user->data->ID)? $current_user->data->ID: 0;
 		$name		= isset($current_user->data->display_name)? $current_user->data->display_name: '';
 		$email		= isset($current_user->data->user_email)? $current_user->data->user_email: '';
+		$settings	= get_option( 'a2reviews_settings', '{}' );
+		$settings	= json_encode($settings);
 		
 		echo "<script type=\"text/javascript\">
 			var A2_Reviews_Woo = {
@@ -130,7 +145,8 @@ class A2reviews_Public {
 				user_id	: $user_id,
 				name	: '$name',
 				email	: '$email',
-				ajaxUrl : '". admin_url( 'admin-ajax.php' ) ."'
+				ajaxUrl : '". admin_url( 'admin-ajax.php' ) ."',
+				settings: JSON.parse('$settings')
 			}
 		</script>";
 	}
@@ -217,6 +233,8 @@ A2;
 	    global $post;
 	    $post_id = isset($post->ID)? intval($post->ID): 0;
 	    
+	    $status 		= get_post_meta( $post_id, 'a2_meta_status', true );
+	    
 	    $product_handle = isset($post->post_name)? $post->post_name: $post_id;
 	    $total_rating 	= get_post_meta( $post_id, 'a2_meta_total_rating', true );
 	    $avg_rating 	= get_post_meta( $post_id, 'a2_meta_avg_rating', true );
@@ -224,6 +242,11 @@ A2;
 	    $total_rating 	= $total_rating? $total_rating: 0;
 	    $avg_rating 	= $avg_rating? $avg_rating: 0;
 	    
+	    if($status === 0){
+		    $total_rating = 0;
+		    $avg_rating = 0;
+	    }
+	    	
 	    $scode = $this->snippets_code($type);
 	    preg_match_all($this->regx, $scode, $matches, PREG_SET_ORDER, 0);
 	    
@@ -259,10 +282,16 @@ A2;
 		    add_filter( 'woocommerce_product_tabs', function($tabs){
 			    global $post;
 			    
+			    $status 			= get_post_meta( $post->ID, 'a2_meta_status', true );
+			    
 			    $post_id 			= isset($post->ID)? intval($post->ID): 0;
 			    $total_rating 		= get_post_meta( $post_id, 'a2_meta_total_rating', true );
 			    $total_rating 		= $total_rating? $total_rating: 0;
 			    $tab_label_mask 	= isset($this->options->tab_label_mask)? $this->options->tab_label_mask: '';
+			    
+			    if($status === 0){
+				    $total_rating = 0;
+			    }
 			    
 			    $re = '/{%\s*.*?\s*%}/m';
 			    preg_match($re, $tab_label_mask, $matches, PREG_OFFSET_CAPTURE, 0);

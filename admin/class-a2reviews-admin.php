@@ -141,20 +141,26 @@ class A2reviews_Admin {
 		        ]
 		    ) );
 		    
-		    $admin_bar->add_menu( array(
-		        'id'    => 'a2reviews-app',
-		        'parent' => 'a2reviews-menu',
-		        'group'  => null,
-		        'title' => '✪ A2Reviews App', //you can use img tag with image link. it will show the image icon Instead of the title.
-		        'href'  => 'options-general.php?page=a2reviews-setting-admin&open-a2app=true',
-		        'meta' => [
-		            'title' => __( '✪ A2Reviews App', 'a2reviews' ), //This title will show on hover
-		        ]
-		    ) );
+		    if(isset($this->options->authentication) && $this->options->authentication){
+			    $admin_bar->add_menu( array(
+			        'id'    => 'a2reviews-app',
+			        'parent' => 'a2reviews-menu',
+			        'group'  => null,
+			        'title' => '✪ A2Reviews App', //you can use img tag with image link. it will show the image icon Instead of the title.
+			        'href'  => 'options-general.php?page=a2reviews-setting-admin&open-a2app=true',
+			        'meta' => [
+			            'title' => __( '✪ A2Reviews App', 'a2reviews' ), //This title will show on hover
+			        ]
+			    ) );
+		    }
         }, 500 );
     }
     
-    
+    /**
+	 * Product column
+	 *
+	 * @since    1.0.0
+	 */
     public function product_column(){
 	    add_filter( 'manage_product_posts_columns', function($columns){
 			$columns['a2reviews'] = __( '✪ A2 Rating', 'a2reviews' );
@@ -185,6 +191,26 @@ class A2reviews_Admin {
 		}, 10, 2 );
     }
     
+    
+    /**
+	 * is woocommerce active
+	 *
+	 * @since    1.0.0
+	 */
+    public function is_woocommerce_active(){
+	    if(in_array('woocommerce/woocommerce.php', apply_filters('active_plugins', get_option('active_plugins')))){ 
+			return true;
+		}
+		
+		return false;
+    }
+    
+    
+    /**
+	 * Check security
+	 *
+	 * @since    1.0.0
+	 */
     public function check_security(){
 	    $postdata = file_get_contents("php://input");
 		$custom_request = json_decode($postdata);
@@ -209,6 +235,8 @@ class A2reviews_Admin {
 	    $url = $message = '';
 	    
 	    if($this->check_security()){
+		    flush_rewrite_rules(true);
+		    
 		    $app_url = A2REVIEWS_APP_URL;
 		    $domain = $this->domain;
 		    $code = md5(wp_generate_password( 20, false ));
@@ -253,6 +281,8 @@ class A2reviews_Admin {
 		    $hmac 		= hash_hmac( 'sha256', base64_encode($str_2_hash), md5(get_option( 'a2reviews_access_token' )));
 		    $url 		= "$app_url/woo-auth-login/?shop=$domain&code=$code&hmac=$hmac&timestamp=$timestamp&ssl=$ssl";
 		    $status 	= 'success';
+		    
+		    update_option( 'a2reviews_auth_code', $code );
 	    }else{
 		    $status = 'error';
 		    $message = __('Sorry, your nonce did not verify.', 'a2reviews');
@@ -281,6 +311,8 @@ class A2reviews_Admin {
 	    $hmac 		= hash_hmac( 'sha256', base64_encode($str_2_hash), md5(get_option( 'a2reviews_access_token' )));
 	    $url 		= "$app_url/woo-auth-login/?shop=$domain&code=$code&hmac=$hmac&timestamp=$timestamp&ssl=$ssl";
 	    
+	    update_option( 'a2reviews_auth_code', $code );
+	    
 	    wp_redirect( $url );
     }
     
@@ -299,6 +331,8 @@ class A2reviews_Admin {
 		} else {
 			$settings = $this->ajaxData->settings;
 			
+			flush_rewrite_rules(true);
+			
 			if($settings && is_object($settings)){
 			    $update = update_option( 'a2reviews_options', $settings);
 			    $status = 'success';
@@ -316,11 +350,12 @@ class A2reviews_Admin {
      * Options page callback
      */
     public function create_admin_page(){
-	    //print_r($this->options);
-	    if(get_option( 'a2reviews_access_token')){
+	    $settings = '{}';
+	     
+	    if($this->options && get_option( 'a2reviews_access_token')){
 		    $this->options->authentication = true;
+		    $settings = json_encode($this->options);
 	    }
-		$settings = json_encode($this->options);
 		
 		echo "<script>var a2reviews_settings = JSON.parse('".$settings."');</script>";
         include( plugin_dir_path(__FILE__) . 'partials/a2reviews-admin-display.php');

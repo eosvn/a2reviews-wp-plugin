@@ -47,3 +47,12 @@ td.column-a2reviews{
     background-color: #0073aa;
     border-color: #0073aa;
 }
+
+#a2review-settings .el-button--primary.is-disabled, 
+#a2review-settings .el-button--primary.is-disabled:active, 
+#a2review-settings .el-button--primary.is-disabled:focus, 
+#a2review-settings .el-button--primary.is-disabled:hover {
+    color: #FFF;
+    background-color: #75b6d6;
+    border-color: #75b6d6;
+}

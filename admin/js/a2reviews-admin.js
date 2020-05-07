@@ -50,7 +50,7 @@
 	        
 	        saving: false,
 	        doing_auth: false,
-	        opening_app: false
+	        opening_app: false,
 		},
 		
 		methods: {

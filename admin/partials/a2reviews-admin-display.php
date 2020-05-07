@@ -36,6 +36,7 @@
 			    	size="small" 
 			    	icon="el-icon-star-on" 
 			    	:disabled="!a2reviewsSettings.authentication"
+			    	:loading="opening_app"
 			    	@click="openA2APP"><?php _e('A2Reviews APP', 'a2reviews') ?>
 			    </el-button>
 			</el-form-item>

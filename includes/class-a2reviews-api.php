@@ -197,7 +197,10 @@ class A2reviews_API {
 		$avg_rating 	= isset($this->post_data['avg_rating'])? floatval($this->post_data['avg_rating']): 0;
 		$count_data 	= isset($this->post_data['count'])? (OBJECT) $this->post_data['count']: $count;
 		
+		$status 		= intval($this->post_data['status']);
+		
 		if($product_id){
+			update_post_meta( $product_id, 'a2_meta_status', $status );
 			update_post_meta( $product_id, 'a2_meta_total_rating', $total_rating );
 			update_post_meta( $product_id, 'a2_meta_total_questions', $total_questions );
 			update_post_meta( $product_id, 'a2_meta_avg_rating', $avg_rating );
@@ -220,6 +223,24 @@ class A2reviews_API {
 			'product_id' => $product_id,
 			'product' => $product_data,
 			'meta' => get_post_meta($product_id)
+		];
+	}
+	
+	/**
+	 * Update product meta api
+	 *
+	 * Long Description.
+	 *
+	 * @since    1.0.0
+	 */
+	private function update_settings(){
+		global $post;
+		
+		$settings = $this->post_data['settings'];
+		update_option( 'a2reviews_settings', $settings );
+		
+		return [
+			'status' => 'success'
 		];
 	}
 	
