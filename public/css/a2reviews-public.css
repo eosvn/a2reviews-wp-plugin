@@ -30,9 +30,13 @@ body.woocommerce-checkout #primary {
 	
 	body.a2reviews .woocommerce-tabs .panel {
 	    width: 100%;
+		clear: both;
 	}
 	
 	body.a2reviews .woocommerce-tabs .a2reviews-wrapper{
 		padding: 0 10px;
+	}
+	body.a2reviews a2-reviews{
+		margin-top: 0;
 	}
 }
