@@ -284,6 +284,12 @@ class A2reviews {
 		        'index.php?vendor=a2-reviews&type=api&endpoint=$matches[1]',
 		        'top'
 		    );
+		    
+		    add_rewrite_rule(
+				'feature-reviews',
+		        'index.php?vendor=a2-reviews&type=feature-page',
+		        'top'
+		    );
 		});
 		
 		add_filter('query_vars', function($vars) {
@@ -310,6 +316,22 @@ class A2reviews {
 				die(0);	
 			}
 		}, 10 );
+		
+		
+		add_action( 'template_include', function( $template ) {
+			global $wp_query;
+			
+			$query = (OBJECT) $wp_query->query;
+
+			if(
+				(isset($query->vendor) && $query->vendor == 'a2-reviews')
+				&& isset($query->type) && $query->type == 'feature-page'
+			){
+		    	return A2REVIEWS_PATH_PUBLIC . '/partials/feature-reviews.php';
+		    }else{
+			    return $template;
+		    }
+		} );
 	}
 
 }

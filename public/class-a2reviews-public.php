@@ -166,7 +166,11 @@ class A2reviews_Public {
 	    <a2-reviews 
 	        handle="{{ product_handle }}" 
 	        lang="en">
-	        A2 Reviews Widget
+	        <div class="a2reviews-rating" itemscope itemprop="aggregateRating" itemtype="schema/AggregateRating">
+	            <meta itemprop="itemreviewed" content="{{ product_title }}">
+	            Rated <span itemprop="ratingValue">{{ avg_rating }}</span>/5
+	            based on <span itemprop="reviewCount">{{ total_rating }}</span> customer reviews
+	        </div>
 	    </a2-reviews>
 	</div>
 A2;
@@ -236,6 +240,7 @@ A2;
 	    $status 		= get_post_meta( $post_id, 'a2_meta_status', true );
 	    
 	    $product_handle = isset($post->post_name)? $post->post_name: $post_id;
+	    $product_title 	= get_the_title( $post_id );
 	    $total_rating 	= get_post_meta( $post_id, 'a2_meta_total_rating', true );
 	    $avg_rating 	= get_post_meta( $post_id, 'a2_meta_avg_rating', true );
 	    
@@ -254,6 +259,10 @@ A2;
 		    foreach($matches as $match){
 			    if(isset($match[0]) && strpos($match[0], 'product_handle') !== false){
 				    $scode = str_replace($match[0], $product_handle, $scode);
+			    }
+			    
+			    if(isset($match[0]) && strpos($match[0], 'product_title') !== false){
+				    $scode = str_replace($match[0], $product_title, $scode);
 			    }
 			    
 			    if(isset($match[0]) && strpos($match[0], 'total_rating') !== false){

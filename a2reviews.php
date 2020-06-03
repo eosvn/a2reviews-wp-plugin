@@ -39,6 +39,7 @@ define( 'A2REVIEWS_VERSION', '1.0.2' );
 define( 'A2REVIEWS_APP_URL', 'https://app.a2rev.com' );
 define( 'A2REVIEWS_API_URL', 'https://api.a2rev.com' );
 define( 'A2REVIEWS_SOCKET_URL', 'https://socket.a2rev.com' );
+define( 'A2REVIEWS_PATH_PUBLIC', plugin_dir_path( __FILE__ ) . 'public' );
 
 /**
  * The code that runs during plugin activation.
