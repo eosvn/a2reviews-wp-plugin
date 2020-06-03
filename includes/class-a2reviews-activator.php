@@ -31,14 +31,43 @@ class A2reviews_Activator {
 	 *
 	 * @since    1.0.0
 	 */
-	public static $default_settings = 'O:8:"stdClass":7:{s:14:"authentication";b:0;s:15:"widget_position";s:19:"Replace default tab";s:22:"widget_custom_position";i:9;s:14:"tab_label_mask";s:29:"Reviews ({% total_reviews %})";s:18:"remove_reviews_tab";b:1;s:21:"widget_total_position";i:2;s:25:"cat_widget_total_position";i:2;}'; 
+	public static $default_settings = [ 
+		'tab_active' 			=> 'Default',
+		'authentication' 		=> false,
+		'widget_position' 		=> 'Replace default tab',
+		'widget_custom_position' => 2,
+		'tab_label_mask' 		=> 'Reviews ({% total_reviews %})',
+		'remove_reviews_tab' 	=> false,
+		'widget_total_position' => 2,
+		'cat_widget_total_position' => 2,
+		'qa_position' 			=> 'In tab',
+		'qa_custom_position' 	=> 2,
+		'tab_qa_label_mask' 	=> 'Questions & Answers ({% total_questions %})'
+	];
 	 
-	public static function activate() {
+	 
+	/**
+	 * activate
+	 */
+	public static function activate() {		
 		$settings = get_option( self::$option_key );
+		$default_settings = (OBJECT) self::$default_settings;
 		
 		if(!$settings){
-			update_option( self::$option_key, $default_settings );
+			update_option( self::$option_key, $default_settings);
 		}
+		
+		add_rewrite_rule(
+			'a2rev/api/([^/]+)/?$',
+	        'index.php?vendor=a2-reviews&type=api&endpoint=$matches[1]',
+	        'top'
+	    );
+	    
+	    add_rewrite_rule(
+			'feature-reviews',
+	        'index.php?vendor=a2-reviews&type=feature-page',
+	        'top'
+	    );
 		
 		flush_rewrite_rules();
 	}

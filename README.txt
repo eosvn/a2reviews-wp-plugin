@@ -4,8 +4,8 @@ Donate link: https://www.gobliz.com/plugin/a2reviews
 Tags: reviews, notify
 Requires PHP: 5.2.4
 Requires at least: 4.8
-Tested up to: 5.3
-Stable tag: 1.0.0
+Tested up to: 5.4.1
+Stable tag: 1.0.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -18,7 +18,7 @@ We create an intelligent assessment management system. Easier for users. Tasks a
 
 [Home Page](https://www.a2rev.com "A2reviews Homepage") | [App](https://app.a2rev.com "App") | [A2Reviews Help](https://help.a2rev.com "A2Reviews Help")
 
-A2Reviews site demo [Demo](https://woo.a2rev.com "Demo")
+A2Reviews site demo [Demo](https://woo.a2reviews.net "Demo")
 
 = Features =
 
@@ -38,6 +38,12 @@ A2Reviews site demo [Demo](https://woo.a2rev.com "Demo")
 
 = 1.0.1 =
 * Release the first version
+
+= 1.0.4 =
+* Fix bugs and support woocommerce order assign to customer
+
+= 1.0.5 =
+* Fix bugs
 
 == Upgrade Notice ==
 

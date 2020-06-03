@@ -480,7 +480,8 @@ A2;
 	 * @since    1.0.0
 	 */
 	public function enqueue_scripts() {
-
+		if(!$this->options->authentication)
+			return false;
 		/**
 		 * This function is provided for demonstration purposes only.
 		 *

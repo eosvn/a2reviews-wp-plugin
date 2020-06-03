@@ -8,6 +8,17 @@ body.woocommerce-checkout #primary {
 	width: 100%;
 }
 
+a2reviews-block{
+	clear: both;
+    display: block;
+    width: 100%;
+    float: left;
+}
+
+a2reviews-block[show-loading]{
+	opacity: 1!important;
+}
+
 @media (min-width: 768px){
 	body.a2reviews .single-product div.product{
 		clear: both;
@@ -30,7 +41,7 @@ body.woocommerce-checkout #primary {
 	
 	body.a2reviews .woocommerce-tabs .panel {
 	    width: 100%;
-		clear: both;
+	    clear: both;
 	}
 	
 	body.a2reviews .woocommerce-tabs .a2reviews-wrapper{

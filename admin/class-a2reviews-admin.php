@@ -291,7 +291,8 @@ class A2reviews_Admin {
 	    wp_send_json( [
 		    'status' 	=> $status,
 		    'message' 	=> $message,
-		    'url' 		=> $url
+		    'url' 		=> $url,
+		    'domain'	=> $domain
 	    ], 200 );
     }
     

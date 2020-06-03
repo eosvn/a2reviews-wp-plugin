@@ -172,6 +172,18 @@ class A2reviews {
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/class-a2reviews-admin.php';
 
 		/**
+		 * The class responsible for defining all actions handle woocommerce order
+		 * side of the site.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-a2reviews-shortcode.php';
+
+		/**
+		 * The class responsible for defining all actions handle woocommerce order
+		 * side of the site.
+		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'public/class-a2reviews-order.php';
+
+		/**
 		 * The class responsible for defining all actions that occur in the public-facing
 		 * side of the site.
 		 */

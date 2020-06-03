@@ -152,6 +152,13 @@ class A2reviews_API {
 			update_option( 'a2reviews_access_token', $access_token );
 			update_option( 'a2reviews_auth_code', '' );
 			
+			$option = get_option( 'a2reviews_options' );
+			
+			if(is_object($option)){
+				$option->authentication = true;
+				update_option( 'a2reviews_options', $option );
+			}
+			
 			$data_info->admin_email 	= get_option( 'admin_email' );
 			$data_info->blogname 		= get_option( 'blogname' );
 			$data_info->siteurl 		= get_option( 'siteurl' );
