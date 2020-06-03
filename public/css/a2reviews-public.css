@@ -30,6 +30,7 @@ body.woocommerce-checkout #primary {
 	
 	body.a2reviews .woocommerce-tabs .panel {
 	    width: 100%;
+		clear: both;
 	}
 	
 	body.a2reviews .woocommerce-tabs .a2reviews-wrapper{
@@ -43,5 +44,9 @@ body.woocommerce-checkout #primary {
 	.a2-content-area .site-main{
 		float: left;
 		width: 100%;
+	}
+	
+	body.a2reviews a2-reviews{
+		margin-top: 0;
 	}
 }
