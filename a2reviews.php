@@ -15,8 +15,8 @@
  * @wordpress-plugin
  * Plugin Name:       A2Reviews
  * Plugin URI:        https://www.a2rev.com
- * Description:       2Reviews is the best review app for WooCommerce. Smart assessment management system. 
- * Version:           1.0.5
+ * Description:       2Reviews is the best review app for WooCommerce. Smart assessment management system.
+ * Version:           1.0.6
  * Author:            A2reviews
  * Author URI:        https://www.gobliz.com/plugin/a2reviews
  * License:           GPL-2.0+
@@ -35,7 +35,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 1.0.0 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'A2REVIEWS_VERSION', '1.0.5' );
+define( 'A2REVIEWS_VERSION', '1.0.6' );
 define( 'A2REVIEWS_APP_URL', 'https://app.a2rev.com' );
 define( 'A2REVIEWS_API_URL', 'https://api.a2rev.com' );
 define( 'A2REVIEWS_SOCKET_URL', 'https://socket.a2rev.com' );

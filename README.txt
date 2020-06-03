@@ -5,7 +5,7 @@ Tags: reviews, notify
 Requires PHP: 5.2.4
 Requires at least: 4.8
 Tested up to: 5.4.1
-Stable tag: 1.0.5
+Stable tag: 1.0.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -16,7 +16,7 @@ Allows customizing everything with its own editor.
 
 We create an intelligent assessment management system. Easier for users. Tasks are easier with reviews on your website.
 
-[Home Page](https://www.a2rev.com "A2reviews Homepage") | [App](https://app.a2rev.com "App") | [A2Reviews Help](https://help.a2rev.com "A2Reviews Help")
+[Home Page](https://www.a2rev.com "A2Reviews Homepage") | [App](https://app.a2rev.com "App") | [A2Reviews Help](https://help.a2rev.com "A2Reviews Help")
 
 A2Reviews site demo [Demo](https://woo.a2reviews.net "Demo")
 
@@ -36,14 +36,17 @@ A2Reviews site demo [Demo](https://woo.a2reviews.net "Demo")
 
 == Changelog ==
 
-= 1.0.1 =
-* Release the first version
+= 1.0.6 =
+* Add order complete action and shortcode to show block reviews
+
+= 1.0.5 =
+* Fix bugs
 
 = 1.0.4 =
 * Fix bugs and support woocommerce order assign to customer
 
-= 1.0.5 =
-* Fix bugs
+= 1.0.1 =
+* Release the first version
 
 == Upgrade Notice ==
 
