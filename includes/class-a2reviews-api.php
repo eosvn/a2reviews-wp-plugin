@@ -69,6 +69,50 @@ class A2reviews_API {
 		}
     }
 	
+	/**
+	 * Check is authentication
+	 *
+	 * Long Description.
+	 *
+	 * @since    1.0.0
+	 */
+	public static function isAuth(){
+		$authenticated = false;
+		
+		$site_url 	= get_site_url();
+		$app_url 	= A2REVIEWS_APP_URL;
+	    $domain 	= str_replace(['http://', 'https://', 'http://www.', 'https://www.'], '', $site_url);;
+	    $ssl 		= strpos($site_url, 'https://') !== false? 'true': 'false';
+	    $timestamp 	= time();
+
+	    $data 		= [
+		    'domain' => $domain,
+		    'site_url' => $site_url,
+		    'ssl' => $ssl,
+		    'timestamp' => $timestamp
+	    ];
+	    	    
+	    $hmac 		= hash_hmac( 'sha256', base64_encode(http_build_query($data)), md5($domain));
+	    
+	    $data_send = array_merge($data, ['hmac' => $hmac]);
+	    
+	    $url = "{$app_url}/woo-check-auth";
+	    $response = wp_remote_post( $url, array(
+		    'body'    => $data_send,
+		    'headers' => array(
+		        'Authorization' => 'A2Reviews',
+		    ),
+		));
+		
+		if(isset($response['body'])){
+			$data = json_decode($response['body']);
+			if($data && $data->authenticated){
+				$authenticated = true;
+			}
+		}
+		
+		return $authenticated;
+	}
 	
 	/**
 	 * Verify data send from a2reviews app
@@ -141,15 +185,12 @@ class A2reviews_API {
 	private function request_access(){
 		$verified = false;
 		$code = isset($this->post_data['code'])? $this->post_data['code']: '';
-		$access_token = '';
+		$access_token = get_option( 'a2reviews_access_token' );
 		$data_info = new \stdClass;
 		
 		if( $code == get_option( 'a2reviews_auth_code' )){
 			$verified = true;
-			$access_token = md5(wp_generate_password( 26, false ));
-			$access_token = sanitize_text_field($access_token);
 			
-			update_option( 'a2reviews_access_token', $access_token );
 			update_option( 'a2reviews_auth_code', '' );
 			
 			$option = get_option( 'a2reviews_options' );
@@ -159,10 +200,19 @@ class A2reviews_API {
 				update_option( 'a2reviews_options', $option );
 			}
 			
-			$data_info->admin_email 	= get_option( 'admin_email' );
+			$admin_email = get_option( 'admin_email' );
+			
+			$user = get_user_by( 'email', $admin_email );
+			$user_info = $user->data;
+			$user_info->first_name = get_user_meta( $user_info->ID, 'first_name', true );
+			$user_info->last_name = get_user_meta( $user_info->ID, 'last_name', true );
+			
+			unset($user_info->user_pass);
+			
+			$data_info->admin_email 	= $admin_email;
 			$data_info->blogname 		= get_option( 'blogname' );
 			$data_info->siteurl 		= get_option( 'siteurl' );
-			$data_info->user 			= get_user_by( 'email', $data_info->admin_email );
+			$data_info->user 			= $user_info;
 		}
 		
 		return [

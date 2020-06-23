@@ -56,6 +56,8 @@ class A2reviews_Admin {
 	
 	protected $ajaxData;
 	
+	private $isAuth;
+	
 	
 	/**
 	 * Ajax events
@@ -95,6 +97,7 @@ class A2reviews_Admin {
 		$domain = str_replace(['http://', 'https://', 'http://www.', 'https://www.'], '', $this->site_url);
 		
 		$this->domain = $domain;
+		$this->isAuth = A2reviews_API::isAuth();
 		
 		//Add a2reviews menu to wordpress admin
 		add_action( 'admin_menu', array( $this, 'add_plugin_page' ) );
@@ -141,7 +144,7 @@ class A2reviews_Admin {
 		        ]
 		    ) );
 		    
-		    if(isset($this->options->authentication) && $this->options->authentication){
+		    if($this->isAuth){
 			    $admin_bar->add_menu( array(
 			        'id'    => 'a2reviews-app',
 			        'parent' => 'a2reviews-menu',
@@ -236,6 +239,11 @@ class A2reviews_Admin {
 	    
 	    if($this->check_security()){
 		    flush_rewrite_rules(true);
+		    
+		    $access_token = md5(wp_generate_password( 26, false ));
+			$access_token = sanitize_text_field($access_token);
+			
+			update_option( 'a2reviews_access_token', $access_token );
 		    
 		    $app_url = A2REVIEWS_APP_URL;
 		    $domain = $this->domain;
@@ -350,10 +358,10 @@ class A2reviews_Admin {
     /**
      * Options page callback
      */
-    public function create_admin_page(){
+    public function create_admin_page(){		
 	    $settings = '{}';
 	     
-	    if($this->options && get_option( 'a2reviews_access_token')){
+	    if($this->isAuth){
 		    $this->options->authentication = true;
 		    $settings = json_encode($this->options);
 	    }
