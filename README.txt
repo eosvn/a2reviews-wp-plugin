@@ -1,11 +1,11 @@
 === A2Reviews ===
-Contributors: Gobliz, A2Reviews
-Donate link: https://www.gobliz.com/plugin/a2reviews
+Contributors: EOSVN, A2Reviews
+Donate link: https://www.eosvn.com/plugin/a2reviews
 Tags: reviews, notify
-Requires PHP: 5.2.4
+Requires PHP: 7.0
 Requires at least: 4.8
-Tested up to: 5.4.1
-Stable tag: 1.0.6
+Tested up to: 6.0.3
+Stable tag: 1.1.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -16,9 +16,9 @@ Allows customizing everything with its own editor.
 
 We create an intelligent assessment management system. Easier for users. Tasks are easier with reviews on your website.
 
-[Home Page](https://www.a2rev.com "A2Reviews Homepage") | [App](https://app.a2rev.com "App") | [A2Reviews Help](https://help.a2rev.com "A2Reviews Help")
+[Home Page](https://bit.ly/3bdA3Wn "A2Reviews Homepage") | [App](https://app.a2rev.com "App") | [A2Reviews Help](https://help.a2rev.com "A2Reviews Help")
 
-A2Reviews site demo [Demo](https://woo.a2reviews.net "Demo")
+A2Reviews site demo [Demo](https://bit.ly/2WdfHrV "Demo")
 
 = Features =
 
@@ -35,6 +35,39 @@ A2Reviews site demo [Demo](https://woo.a2reviews.net "Demo")
 2. Go to Settings > A2Reviews , for custom the settings and authentication
 
 == Changelog ==
+
+= 1.1.7 =
+* Fixed some issues with total widget display.
+* Updated to allow customers to choose client-side version.
+* Add some options in settings
+* Add template layout for paid store.
+* A few optimization improvements.
+
+= 1.1.6 =
+* Improve website authentication, easily connect to A2Reviews application
+
+= 1.1.4 =
+* Fix bug on widget shortcode
+
+= 1.1.3 =
+* Fix bug "Uncaught Error: Cannot use object of type WP_Error as array."
+
+= 1.1.2 =
+* Updated some Shortcodes to show reviews.
+* [a2reviews-widget-feature] - Display the best curated reviews on your website.
+* [a2reviews-widget product-id="3853"] - Displays reviews of a particular product.
+* [a2reviews-widget type="total" product-id="3853"] - Only display the widget of total review.
+* [a2reviews-widget type="total-collection" product-id="3853"] - Only display the widget of total review without no text.
+
+
+= 1.1.1 =
+* Change to new CDN
+
+= 1.0.9 =
+* Fix custom position for total widget reviews
+
+= 1.0.7 & 1.0.8 =
+* Fix authentication with APP
 
 = 1.0.6 =
 * Add order complete action and shortcode to show block reviews

@@ -41,13 +41,22 @@ class A2reviews_Public {
 	private $version;
 	
 	/**
+	 * The client version of this plugin.
+	 *
+	 * @since    1.0.6
+	 * @access   private
+	 * @var      string    $client_version
+	 */
+	private $client_version;
+	
+	/**
 	 * CDN of app.
 	 *
 	 * @since    1.0.0
 	 * @access   private
 	 * @var      string    $version    The current version of this plugin.
 	 */
-	private $app_script = 'https://cdn.huzhop.com/a2/client-core/js/app.js';
+	private $app_script = 'https://cdn.a2rev.com/a2/client-core/js/app.js';
 	
 	/**
 	 * The domain of client site.
@@ -88,6 +97,8 @@ class A2reviews_Public {
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
+		$this->client_version = get_option('a2reviews_client_version', '1.0.4');
+		$this->app_script = str_replace('client-core', $this->client_version, $this->app_script);
 		
 		$site_url = get_site_url();
 		$domain = str_replace(['http://', 'https://', 'http://www.', 'https://www.'], '', $site_url);
@@ -102,6 +113,8 @@ class A2reviews_Public {
 		    return array_merge( $classes, array( 'a2reviews' ) );
 		} );
 		
+		add_filter( 'woocommerce_locate_template', [&$this, 'woo_adon_plugin_template'], 1, 3 );
+		   
 		// Remove storefront sidebar
 		add_action( 'get_header', function(){			
 			if ( $this->is_woocommerce_active() ) {
@@ -149,6 +162,39 @@ class A2reviews_Public {
 				settings: JSON.parse('$settings')
 			}
 		</script>";
+	}
+	
+	
+	/**
+	 * A2 filter woo template
+	 *
+	 * @param Request object $request Data.
+	 * @return JSON data
+	 */
+	public function woo_adon_plugin_template( $template, $template_name, $template_path ) {
+		global $woocommerce;
+		$_template = $template;
+		
+		if ( ! $template_path ) 
+			$template_path = $woocommerce->template_url;
+		
+		$plugin_path  = untrailingslashit( plugin_dir_path( __FILE__ ) )  . '/woo-templates/';
+		
+		// Look within passed path within the theme - this is priority
+		$template = locate_template(
+			array(
+				$template_path . $template_name,
+				$template_name
+			)
+		);
+		
+		if( ! $template && file_exists( $plugin_path . $template_name ) )
+			$template = $plugin_path . $template_name;
+		
+		if ( ! $template )
+			$template = $_template;
+		
+		return $template;
 	}
 	
 	/**
@@ -369,24 +415,34 @@ A2;
 	    
 	    if($this->options->widget_total_position == 1){
 		    $widget_total_priority = 3;
+			$total_single_hook_position = 'a2reviews_before_product_title';
+	    }else if($this->options->widget_total_position == 2){
+			$total_single_hook_position = 'a2reviews_after_product_title';
+		}else if($this->options->widget_total_position == 9){
+		    $total_single_hook_position = 'a2reviews_widget_total';
 	    }
-	    
+
 	    add_action( $total_single_hook_position, function(){
 		    echo $this->widget_generate('total');
 	    }, $widget_total_priority);
 	    
 	    
 	    //For loop page
+		$replace_default = $this->options->replace_cwt_default == 'true'? true: false;
 	    $collect_total_hook_position = 'woocommerce_shop_loop_item_title';
-	    $widget_cat_total_priority = 20;
-	    
+	    $widget_cat_total_priority = 80;
+	    //print_r($this->options->cat_widget_total_position);
 	    if($this->options->cat_widget_total_position == 1){
 		    $widget_cat_total_priority = 3;
+	    }else if($this->options->cat_widget_total_position == 9){
+		    $collect_total_hook_position = 'a2reviews_loop_widget_total';
 	    }
 	    
-	    add_action( $collect_total_hook_position, function(){
-		    echo $this->widget_generate('collection-total');
-	    }, $widget_cat_total_priority );
+		if(!$replace_default){
+			add_action( $collect_total_hook_position, function(){
+				echo $this->widget_generate('collection-total');
+			}, $widget_cat_total_priority );
+		}
 	    
 	    //For questions an answers
 	    $qa_widget_intab = $this->options->qa_position === 'In tab';

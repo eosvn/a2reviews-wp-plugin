@@ -1,7 +1,7 @@
 <?php
 
 /**
- * A2 Reviews api class
+ * A2Reviews api class
  *
  * @link       https://www.gobliz.com/plugin/a2reviews
  * @since      1.0.0
@@ -104,7 +104,7 @@ class A2reviews_API {
 		    ),
 		));
 		
-		if(isset($response['body'])){
+		if(!is_wp_error( $response ) && isset($response['body'])){
 			$data = json_decode($response['body']);
 			if($data && $data->authenticated){
 				$authenticated = true;
@@ -190,9 +190,6 @@ class A2reviews_API {
 		
 		if( $code == get_option( 'a2reviews_auth_code' )){
 			$verified = true;
-			
-			update_option( 'a2reviews_auth_code', '' );
-			
 			$option = get_option( 'a2reviews_options' );
 			
 			if(is_object($option)){
@@ -213,6 +210,9 @@ class A2reviews_API {
 			$data_info->blogname 		= get_option( 'blogname' );
 			$data_info->siteurl 		= get_option( 'siteurl' );
 			$data_info->user 			= $user_info;
+			$data_info->apiKey 			= A2WC()->createResAPIKey($code);
+			
+			update_option( 'a2reviews_auth_code', '' );
 		}
 		
 		return [

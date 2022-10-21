@@ -152,6 +152,14 @@ class A2reviews {
 		 * The class responsible for orchestrating the actions and filters of the
 		 * core plugin.
 		 */
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/functions.php';
+		
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-a2reviews-woo.php';
+		
+		/**
+		 * The class responsible for orchestrating the actions and filters of the
+		 * core plugin.
+		 */
 		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'includes/class-a2reviews-api.php';
 
 		/**

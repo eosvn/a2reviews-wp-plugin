@@ -28,6 +28,7 @@
 			    	type="success" round 
 			    	size="small" 
 			    	icon="el-icon-unlock" 
+			    	:loading="doing_auth"
 			    	@click="doAuthentication"><?php _e('Connected', 'a2reviews'); ?>
 			    </el-button> 
 			    
@@ -99,7 +100,9 @@
 			</el-form-item>
 			
 			<el-form-item label="Category Total Widget" prop="widget">
-				<el-select v-model="a2reviewsSettings.cat_widget_total_position" placeholder="Select" size="small">
+				<el-switch v-model="a2reviewsSettings.replace_cwt_default"></el-switch> <span>Replace stars rating default</span> <br />
+				
+				<el-select v-model="a2reviewsSettings.cat_widget_total_position" placeholder="Select" size="small" :disabled="a2reviewsSettings.replace_cwt_default">
 				    <el-option
 				      v-for="item in cat_widget_total_position_options"
 				      :key="item.value"
